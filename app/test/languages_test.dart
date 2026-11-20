@@ -1,4 +1,4 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:arman_vpn/app_settings.dart';
 import 'package:arman_vpn/core/models.dart';
@@ -65,7 +65,7 @@ void main() {
   });
 
   testWidgets('every language formats dates', (tester) async {
-    // Loads the date formats the app gets from material_ui.
+    // Loads the date formats the app gets from Flutter Material.
     for (final language in AppSettings.supportedLanguages) {
       final locale = AppSettings.localeOf(language);
       await GlobalMaterialLocalizations.delegate.load(locale);
