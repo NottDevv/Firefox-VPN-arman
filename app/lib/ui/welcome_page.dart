@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 import '../app_settings.dart';
 import '../core/android_core.dart';
