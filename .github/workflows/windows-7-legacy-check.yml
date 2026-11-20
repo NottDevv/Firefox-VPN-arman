@@ -71,8 +71,8 @@ jobs:
             git commit -m "Resolve Go dependencies for Windows 7 legacy"
             git push origin "HEAD:$GITHUB_REF_NAME"
           fi
-          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 GOTOOLCHAIN=local "$GOCMD" build -trimpath -ldflags="-s -w" -o ../legacy-core/arman-vpn-core.exe ./cmd/arman-vpn-core
-          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 GOTOOLCHAIN=local "$GOCMD" build -tags=with_gvisor -trimpath -ldflags="-s -w" -o ../legacy-core/arman-vpn-tun.exe ./cmd/arman-vpn-tun
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 GOTOOLCHAIN=local "$GOCMD" build -trimpath -ldflags="-s -w -X github.com/armanlife/arman-vpn-client/core/internal/version.Current=1.0.19" -o ../legacy-core/arman-vpn-core.exe ./cmd/arman-vpn-core
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 GOTOOLCHAIN=local "$GOCMD" build -tags=with_gvisor -trimpath -ldflags="-s -w -X github.com/armanlife/arman-vpn-client/core/internal/version.Current=1.0.19" -o ../legacy-core/arman-vpn-tun.exe ./cmd/arman-vpn-tun
       - name: Upload legacy Go binaries
         uses: actions/upload-artifact@v4
         with:
@@ -154,7 +154,7 @@ jobs:
         run: ./scripts/prepare-windows-legacy.ps1
       - name: Build Windows x64 legacy runner
         working-directory: app
-        run: flutter build windows --release --no-pub --dart-define=ARMAN_WINDOWS_LEGACY=true
+        run: flutter build windows --release --no-pub --dart-define=ARMAN_WINDOWS_LEGACY=true --dart-define=APP_VERSION=1.0.19
       - name: Download Windows 7 legacy Go binaries
         uses: actions/download-artifact@v4
         with:
