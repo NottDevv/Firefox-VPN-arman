@@ -17,7 +17,72 @@ permissions:
   contents: write
 
 jobs:
+  # Match Throne's legacy build architecture: cross-compile the Go core on macOS
+  # with MetaCubeX's patched Go 1.26 toolchain, then hand the EXEs to Windows packaging.
+  build-core-legacy:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.0'
+          cache: false
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: ~/go/pkg/mod
+          key: macos-go-mod-${{ hashFiles('core/go.sum') }}
+          restore-keys: |
+            macos-go-mod-
+      - name: Cache MetaCubeX legacy Go toolchain
+        id: cache-metacubex-go
+        uses: actions/cache@v4
+        with:
+          path: .toolchains/metacubex-go
+          key: metacubex-go-1.26-${{ runner.os }}-${{ runner.arch }}
+      - name: Install MetaCubeX Go 1.26 for macOS host
+        if: steps.cache-metacubex-go.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          host_os="$(go env GOHOSTOS)"
+          host_arch="$(go env GOHOSTARCH)"
+          archive="$RUNNER_TEMP/metacubex-go.tar.gz"
+          curl -fL "https://github.com/MetaCubeX/go/releases/download/build/go1.26.${host_os}-${host_arch}.tar.gz" -o "$archive"
+          mkdir -p .toolchains
+          tar -xzf "$archive" -C .toolchains
+          mv .toolchains/go .toolchains/metacubex-go
+      - name: Resolve modules and cross-build Windows 7 Core and TUN
+        shell: bash
+        run: |
+          set -euo pipefail
+          GOCMD="$GITHUB_WORKSPACE/.toolchains/metacubex-go/bin/go"
+          test -x "$GOCMD"
+          "$GOCMD" version
+          export GOTOOLCHAIN=local
+          mkdir -p legacy-core
+          cd core
+          "$GOCMD" mod tidy
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add go.mod go.sum
+          if ! git diff --cached --quiet; then
+            git commit -m "Resolve Go dependencies for Windows 7 legacy"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 GOTOOLCHAIN=local "$GOCMD" build -trimpath -ldflags="-s -w" -o ../legacy-core/arman-vpn-core.exe ./cmd/arman-vpn-core
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 GOTOOLCHAIN=local "$GOCMD" build -tags=with_gvisor -trimpath -ldflags="-s -w" -o ../legacy-core/arman-vpn-tun.exe ./cmd/arman-vpn-tun
+      - name: Upload legacy Go binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-7-legacy-core
+          path: legacy-core/*.exe
+          if-no-files-found: error
+          retention-days: 7
+
   flutter-legacy:
+    needs: build-core-legacy
     runs-on: windows-2022
     timeout-minutes: 45
     steps:
@@ -90,55 +155,17 @@ jobs:
       - name: Build Windows x64 legacy runner
         working-directory: app
         run: flutter build windows --release --no-pub --dart-define=ARMAN_WINDOWS_LEGACY=true
-      # Match Throne's Windows legacy toolchain: MetaCubeX Go 1.26, not stock Go 1.20.
-      - name: Cache MetaCubeX Go 1.26
-        id: cache-metacubex-go
-        uses: actions/cache@v4
+      - name: Download Windows 7 legacy Go binaries
+        uses: actions/download-artifact@v4
         with:
-          path: .toolchains\metacubex-go
-          key: metacubex-go-1.26-windows-amd64
-      - name: Install MetaCubeX Go 1.26
-        if: steps.cache-metacubex-go.outputs.cache-hit != 'true'
+          name: windows-7-legacy-core
+          path: legacy-core
+      - name: Install legacy Go binaries into release folder
         shell: pwsh
         run: |
-          $archive = Join-Path $env:RUNNER_TEMP "go1.26.windows-amd64.zip"
-          $extract = Join-Path $env:RUNNER_TEMP "metacubex-go-extract"
-          Invoke-WebRequest -Uri "https://github.com/MetaCubeX/go/releases/download/build/go1.26.windows-amd64.zip" -OutFile $archive
-          Expand-Archive -Path $archive -DestinationPath $extract -Force
-          New-Item -ItemType Directory -Force -Path ".toolchains" | Out-Null
-          if (-not (Test-Path "$extract/go/bin/go.exe")) { throw "MetaCubeX Go archive did not contain go/bin/go.exe" }
-          Move-Item -Path "$extract/go" -Destination ".toolchains/metacubex-go"
-      - name: Activate patched Go toolchain
-        shell: pwsh
-        run: |
-          $goBin = Join-Path $env:GITHUB_WORKSPACE ".toolchains\metacubex-go\bin"
-          if (-not (Test-Path (Join-Path $goBin "go.exe"))) { throw "Patched Go executable is missing" }
-          Add-Content -Path $env:GITHUB_PATH -Value $goBin
-          Add-Content -Path $env:GITHUB_ENV -Value "GOTOOLCHAIN=local"
-          $env:PATH = "$goBin;$env:PATH"
-          $version = & (Join-Path $goBin "go.exe") version
-          Write-Host $version
-          if ($version -notmatch "go1\.26\.") { throw "Expected MetaCubeX Go 1.26, got: $version" }
-      - name: Resolve Go modules with MetaCubeX Go 1.26
-        working-directory: core
-        run: go mod tidy
-      - name: Commit resolved Go module files
-        shell: pwsh
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add core/go.mod core/go.sum
-          $changed = git diff --cached --name-only
-          if ($changed) {
-            git commit -m "Pin Go dependencies for Windows 7 legacy"
-            git push origin "HEAD:$env:GITHUB_REF_NAME"
-          }
-      - name: Build Windows x64 core
-        working-directory: core
-        run: go build -trimpath -ldflags="-s -w" -o ../app/build/windows/x64/runner/Release/arman-vpn-core.exe ./cmd/arman-vpn-core
-      - name: Build Windows x64 TUN service
-        working-directory: core
-        run: go build -tags=with_gvisor -trimpath -ldflags="-s -w" -o ../app/build/windows/x64/runner/Release/arman-vpn-tun.exe ./cmd/arman-vpn-tun
+          $releaseDir = "app/build/windows/x64/runner/Release"
+          Copy-Item "legacy-core/arman-vpn-core.exe" $releaseDir -Force
+          Copy-Item "legacy-core/arman-vpn-tun.exe" $releaseDir -Force
       - name: Package Windows 7 legacy x64 ZIP
         shell: pwsh
         run: |
