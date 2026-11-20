@@ -777,7 +777,8 @@ class LabeledSwitch extends StatelessWidget {
 /// the dashboard's link, which holds a sign-in and works on this device
 /// only.
 Future<void> openLink(BuildContext context, String url) async {
-  if (await openUrl(url) || !context.mounted) return;
+  final opened = await openUrl(url);
+  if (opened || !context.mounted) return;
   await showLink(context, url);
 }
 

@@ -370,7 +370,7 @@ class _CreateAccountGuide extends StatelessWidget {
                   onPressed: () => openLink(context, firefoxAccountSignUpUrl),
                   icon: const Icon(Icons.open_in_new_rounded, size: 18),
                   // The address reads left to right in every language.
-                  label: Text(
+                  label: const Text(
                     'accounts.firefox.com',
                     textDirection: TextDirection.ltr,
                   ),
