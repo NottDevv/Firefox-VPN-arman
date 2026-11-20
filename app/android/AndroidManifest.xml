@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Flutter 3.16.x does not recognize the Kotlin-DSL build.gradle.kts files in
+  this project when locating the Android manifest during plugin resolution.
+  It therefore falls back to this legacy manifest path. Keep the embedding
+  marker here so Windows-only Flutter dependency resolution can complete.
+  The real Android application manifest remains app/src/main/AndroidManifest.xml;
+  Gradle ignores this compatibility marker.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <meta-data android:name="flutterEmbedding" android:value="2" />
+    </application>
+</manifest>
