@@ -37,3 +37,9 @@ jobs:
       - name: Tests
         working-directory: app
         run: flutter test
+      - name: Prepare Windows 7 plugin registration
+        shell: pwsh
+        run: ./scripts/prepare-windows-legacy.ps1
+      - name: Build Windows x64 legacy runner
+        working-directory: app
+        run: flutter build windows --release --dart-define=ARMAN_WINDOWS_LEGACY=true
