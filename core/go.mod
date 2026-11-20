@@ -1,6 +1,6 @@
 module github.com/armanlife/arman-vpn-client/core
 
-go 1.24.0
+go 1.26.0
 
 require (
 	fyne.io/systray v1.12.2
@@ -12,10 +12,10 @@ require (
 	github.com/sagernet/sing v0.7.6
 	github.com/sagernet/sing-tun v0.7.0
 	github.com/tc-hib/winres v0.3.1
-	golang.org/x/crypto v0.36.0
+	golang.org/x/crypto v0.58.0
 	golang.org/x/net v0.62.0
-	golang.org/x/sys v0.38.0
-	golang.org/x/term v0.30.0
+	golang.org/x/sys v0.49.0
+	golang.org/x/term v0.47.0
 )
 
 require (
@@ -43,9 +43,9 @@ require (
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
 	golang.org/x/exp v0.0.0-20240613232115-7f521ea00fb8 // indirect
 	golang.org/x/image v0.12.0 // indirect
-	golang.org/x/mod v0.18.0 // indirect
-	golang.org/x/sync v0.12.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
+	golang.org/x/mod v0.41.0 // indirect
+	golang.org/x/sync v0.24.0 // indirect
+	golang.org/x/text v0.43.0 // indirect
 	golang.org/x/time v0.7.0 // indirect
-	golang.org/x/tools v0.22.0 // indirect
+	golang.org/x/tools v0.51.0 // indirect
 )
