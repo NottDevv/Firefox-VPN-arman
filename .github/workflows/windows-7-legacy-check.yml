@@ -42,6 +42,8 @@ jobs:
         with:
           name: windows-7-legacy-pubspec-lock
           path: app/pubspec.lock
+          if-no-files-found: error
+          retention-days: 7
       - name: Commit resolved Flutter lockfile
         shell: pwsh
         run: |
@@ -53,8 +55,6 @@ jobs:
             git commit -m "Update Flutter lockfile for Windows 7 legacy"
             git push origin "HEAD:$env:GITHUB_REF_NAME"
           }
-          if-no-files-found: error
-          retention-days: 7
       - name: Analyze
         working-directory: app
         run: flutter analyze --no-pub
