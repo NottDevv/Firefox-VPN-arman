@@ -330,14 +330,18 @@ class _ShellState extends State<Shell> {
                                     children: [
                                       const AppLogo(size: 34),
                                       const SizedBox(width: 10),
-                                      Text(
-                                        l.appTitle,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                      Expanded(
+                                        child: Text(
+                                          l.appTitle,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                        ),
                                       ),
                                     ],
                                   ),
