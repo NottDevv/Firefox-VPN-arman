@@ -19,8 +19,12 @@ import 'widgets.dart';
 /// Whether this platform has the in-app browser for the browser sign-in
 /// (WebView2 on Windows, the system WebView on Android, WKWebView on
 /// macOS).
+// The Windows 7 build deliberately uses the email/password sign-in form.
+// WebView2 is not part of that build because its supported runtime does not
+// cover Windows 7 SP1.
 bool get browserSignInSupported =>
-    Platform.isWindows || Platform.isAndroid || Platform.isMacOS;
+    !const bool.fromEnvironment('ARMAN_WINDOWS_LEGACY') &&
+    (Platform.isWindows || Platform.isAndroid || Platform.isMacOS);
 
 /// The Windows browser views share one WebView2 environment, made once per
 /// run of the app with the sign-in proxy it is given then; the core is
