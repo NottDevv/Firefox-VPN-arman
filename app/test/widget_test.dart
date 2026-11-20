@@ -23,6 +23,12 @@ import 'package:arman_vpn/ui/settings_page.dart'
 import 'package:arman_vpn/ui/signin_dialog.dart';
 import 'package:arman_vpn/ui/widgets.dart';
 
+Finder _buttonWithText<T extends Widget>(String text) =>
+    find.ancestor(
+      of: find.text(text),
+      matching: find.byWidgetPredicate((widget) => widget is T),
+    );
+
 Map<String, Object?> _account(
   String id,
   String status, {
@@ -601,7 +607,7 @@ void main() {
     List<MethodCall> finish() => calls
         .where((c) => c.method == 'TextInput.finishAutofillContext')
         .toList();
-    await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
+    await tester.tap(_buttonWithText<FilledButton>('Sign in'));
     await tester.pump();
     await tester.pump();
     // Until Mozilla accepts the password, the form stays (the button busy)
@@ -669,7 +675,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).at(0), 'me@example.com');
     await tester.enterText(find.byType(TextField).at(1), 'pw');
-    await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
+    await tester.tap(_buttonWithText<FilledButton>('Sign in'));
     await tester.pump();
     await tester.pump();
 
@@ -735,7 +741,7 @@ void main() {
     expect(find.text(rawError), findsNothing);
     expect(retries, 0);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Try again'));
+    await tester.tap(_buttonWithText<FilledButton>('Try again'));
     await tester.pumpAndSettle();
 
     expect(retries, 1);
@@ -890,7 +896,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).at(0), 'me@example.com');
     await tester.enterText(find.byType(TextField).at(1), 'almost-righ');
-    await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
+    await tester.tap(_buttonWithText<FilledButton>('Sign in'));
     await tester.pumpAndSettle();
 
     final l = lookupAppLocalizations(const Locale('en'));
@@ -904,12 +910,12 @@ void main() {
     expect(fields[0].controller!.text, 'me@example.com');
     expect(fields[1].controller!.text, 'almost-righ');
     expect(fields[1].focusNode!.hasFocus, isTrue);
-    expect(find.widgetWithText(FilledButton, 'Sign in'), findsOneWidget);
+    expect(_buttonWithText<FilledButton>('Sign in'), findsOneWidget);
 
     // Sending the corrected password starts a new sign-in.
     api.signInOutcome = null;
     await tester.enterText(find.byType(TextField).at(1), 'almost-right');
-    await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
+    await tester.tap(_buttonWithText<FilledButton>('Sign in'));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
     await tester.pump();
@@ -1496,7 +1502,7 @@ void main() {
     expect(find.text('Personal relay'), findsOneWidget);
     final field = find.widgetWithText(TextField, 'Relay server');
     // Save goes under the field on a computer too: long addresses need the width.
-    final save = find.widgetWithText(FilledButton, 'Save');
+    final save = _buttonWithText<FilledButton>('Save');
     expect(tester.getRect(save).top, greaterThan(tester.getRect(field).bottom));
     expect(tester.getRect(field).width, greaterThan(600));
     await tester.enterText(field, 'http://relay.example');
@@ -1665,7 +1671,7 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(relayRow);
         await tester.pumpAndSettle();
-        final button = find.widgetWithText(OutlinedButton, l.testRelay);
+        final button = _buttonWithText<OutlinedButton>(l.testRelay);
         expect(tester.widget<OutlinedButton>(button).onPressed, isNull);
         await tester.enterText(
           find.widgetWithText(TextField, l.apiRelay),
@@ -1721,7 +1727,7 @@ void main() {
           findsOneWidget,
         );
         expect(find.textContaining('HTTP 429:'), findsOneWidget);
-        final closeButton = find.widgetWithText(FilledButton, l.close);
+        final closeButton = _buttonWithText<FilledButton>(l.close);
         final copyLabel = tester.getRect(find.text(l.relayTestCopy));
         final retryLabel = tester.getRect(find.text(l.retry));
         final closeRect = tester.getRect(closeButton);
@@ -1801,7 +1807,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('Testing…'), findsOneWidget);
       await tester.pump();
-      await tester.tap(find.widgetWithText(FilledButton, 'Close'));
+      await tester.tap(_buttonWithText<FilledButton>('Close'));
       await tester.pumpAndSettle();
       expect(cancelled, isTrue);
       await core.refresh();
@@ -1846,7 +1852,7 @@ void main() {
       await tester.tap(
         find.descendant(
           of: find.ancestor(of: field, matching: find.byType(Column)).first,
-          matching: find.widgetWithText(FilledButton, 'Save'),
+          matching: _buttonWithText<FilledButton>('Save'),
         ),
       );
       await tester.pumpAndSettle();
@@ -1944,7 +1950,7 @@ void main() {
     final port = find.widgetWithText(TextField, 'Port');
     final username = find.widgetWithText(TextField, 'Proxy username');
     final password = find.widgetWithText(TextField, 'Proxy password');
-    final save = find.widgetWithText(FilledButton, 'Save');
+    final save = _buttonWithText<FilledButton>('Save');
     Future<void> enter(Finder field, String text) async {
       await tester.enterText(field, text);
       await tester.pump();
@@ -2158,7 +2164,7 @@ void main() {
     await core.refresh();
     await core.runTest();
     await tester.pumpAndSettle();
-    expect(find.widgetWithText(TextButton, 'Upstream proxy'), findsOneWidget);
+    expect(_buttonWithText<TextButton>('Connection settings'), findsOneWidget);
     expect(mark, findsNothing);
 
     // It opens the setting.
@@ -2207,10 +2213,10 @@ void main() {
     // with its button instead, and the locations still to choose from.
     expect(api.pings, 0);
     expect(find.text('No accounts yet'), findsOneWidget);
-    expect(find.widgetWithText(FilledButton, 'Add account'), findsOneWidget);
+    expect(_buttonWithText<FilledButton>('Add account'), findsOneWidget);
     expect(find.text('Netherlands'), findsOneWidget);
     final test = tester.widget<TextButton>(
-      find.widgetWithText(TextButton, 'Test real delay'),
+      _buttonWithText<TextButton>('Test real delay'),
     );
     expect(test.onPressed, isNull);
 
@@ -2408,7 +2414,7 @@ void main() {
     await tester.pumpAndSettle();
     // Its form's Save: after the MTU's in the connection section, before
     // the Worker's at the end of the page.
-    final save = find.widgetWithText(FilledButton, 'Save').at(1);
+    final save = _buttonWithText<FilledButton>('Save').at(1);
     await tester.enterText(
       find.widgetWithText(TextField, 'Proxy username'),
       'user',
@@ -3032,6 +3038,7 @@ void main() {
       Release? found,
       String known = '',
     }) async {
+      Updates.reset();
       stillMotion(tester);
       tester.view.physicalSize = const Size(1200, 900);
       tester.view.devicePixelRatio = 1;
@@ -3088,7 +3095,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Important service notice'), findsNothing);
         expect(
-          find.widgetWithText(OutlinedButton, 'Check for updates'),
+          _buttonWithText<OutlinedButton>('Check for updates'),
           findsOneWidget,
         );
         expect(find.text('Download'), findsOneWidget);
@@ -3556,7 +3563,7 @@ void main() {
       await tester.tap(find.text('Advanced'));
       await tester.pumpAndSettle();
       expect(find.text('Remove the TUN service'), findsOneWidget);
-      final remove = find.widgetWithText(OutlinedButton, 'Remove');
+      final remove = _buttonWithText<OutlinedButton>('Remove');
       await tester.ensureVisible(remove);
       await tester.pumpAndSettle();
       // Asked first: Cancel keeps it.
@@ -3567,7 +3574,7 @@ void main() {
       expect(service.removals, 0);
       await tester.tap(remove);
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(FilledButton, 'Remove'));
+      await tester.tap(_buttonWithText<FilledButton>('Remove'));
       await tester.pumpAndSettle();
       expect(service.removals, 1);
       expect(
@@ -3689,7 +3696,7 @@ void main() {
       );
       await tester.enterText(find.byType(TextField).last, ' steam* ');
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(FilledButton, 'Add program'));
+      await tester.tap(_buttonWithText<FilledButton>('Add program'));
       await tester.pumpAndSettle();
       expect(programs().last, {'name': 'steam*'});
       expect(programs(), hasLength(4));

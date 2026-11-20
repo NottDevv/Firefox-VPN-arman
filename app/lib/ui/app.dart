@@ -300,37 +300,65 @@ class _ShellState extends State<Shell> {
           onOpenUpdates: () => setState(() => _page = _Page.about),
           child: Row(
             children: [
-              NavigationRail(
-                selectedIndex: pages.indexOf(page),
-                onDestinationSelected: select,
-                // Icons with their names beside them.
-                extended: true,
-                minExtendedWidth: 190,
-                leading: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-                  child: Row(
-                    children: [
-                      const AppLogo(size: 34),
-                      const SizedBox(width: 10),
-                      Text(
-                        l.appTitle,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w600),
+              SizedBox(
+                width: 190,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final height = constraints.maxHeight < 520
+                              ? 520.0
+                              : constraints.maxHeight;
+                          return SingleChildScrollView(
+                            child: SizedBox(
+                              height: height,
+                              child: NavigationRail(
+                                selectedIndex: pages.indexOf(page),
+                                onDestinationSelected: select,
+                                // Icons with their names beside them.
+                                extended: true,
+                                minExtendedWidth: 190,
+                                leading: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    16,
+                                    16,
+                                    20,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const AppLogo(size: 34),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        l.appTitle,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                destinations: [
+                                  for (final (icon, selected, label) in items)
+                                    NavigationRailDestination(
+                                      icon: icon,
+                                      selectedIcon: selected,
+                                      label: Text(label),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                ),
-                destinations: [
-                  for (final (icon, selected, label) in items)
-                    NavigationRailDestination(
-                      icon: icon,
-                      selectedIcon: selected,
-                      label: Text(label),
                     ),
-                ],
-                // The traffic at the bottom of the menu; in a short window the
-                // pages above it scroll rather than run under it.
-                trailing: _TrafficPanel(traffic: status?.traffic),
+                    _TrafficPanel(traffic: status?.traffic),
+                  ],
+                ),
               ),
               // A maximized window: the pages stay as wide as reads well; the
               // home page, centered by itself, keeps its colors to the edges.
