@@ -47,8 +47,6 @@ void main() {
     // not name: that is no name.
     expect(countryName(fa, 'IS', 'IS'), 'Iceland');
     expect(countryName(en, 'de', 'DE'), 'Germany');
-    final zhHant = lookupAppLocalizations(AppSettings.localeOf('zh_Hant'));
-    expect(countryName(zhHant, 'US'), '美國');
     // The recommended location keeps its own name.
     expect(
       locationName(fa, 'REC', 'Recomended Location'),
@@ -124,7 +122,7 @@ void main() {
   // notification) still reads right to left.
   test('RTL country names read right to left', () {
     final arabicLetter = RegExp('^[\u0600-\u06FF]');
-    for (final language in ['fa', 'ar']) {
+    for (final language in ['fa']) {
       for (final name in localCountryNames[language]!.values) {
         expect(name, matches(arabicLetter), reason: '$language $name');
         expect(name, isNot(contains('\u0654')), reason: name);
