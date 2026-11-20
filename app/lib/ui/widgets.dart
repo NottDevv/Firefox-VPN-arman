@@ -161,7 +161,7 @@ ThemeData midnightTheme(ThemeData base) {
         brightness: Brightness.dark,
       ).copyWith(
         surface: Midnight.bottom,
-        surfaceVariant: Midnight.bottom,
+        surfaceContainerHighest: Midnight.bottom,
         onSurface: Colors.white,
         onSurfaceVariant: Midnight.muted,
         secondaryContainer: Colors.white.withOpacity( 0.10),
@@ -607,7 +607,7 @@ class QuotaBar extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: value,
                   color: color,
-                  backgroundColor: scheme.surfaceVariant,
+                  backgroundColor: scheme.surfaceContainerHighest,
                 ),
               ),
             ),
