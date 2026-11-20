@@ -29,9 +29,9 @@ var upstreamH3TLSSessions = tls.NewLRUClientSessionCache(32)
 
 // h3ProxySession holds a single QUIC connection used for HTTP/3 CONNECT tunnels.
 type h3ProxySession struct {
-	conn      *quic.Conn
+	conn      quic.EarlyConnection
 	udpConn   *net.UDPConn
-	rt        *http3.Transport
+	rt        *http3.RoundTripper
 	proxyHost string
 	token     string
 	timeout   time.Duration
@@ -165,8 +165,8 @@ func newH3ProxySession(proxyURL *url.URL, token string, timeout time.Duration) (
 	}
 	logx.Info("upstream HTTP/3 session established proxy=%s remote=%s", proxyHost, conn.RemoteAddr())
 
-	rt := &http3.Transport{
-		Dial: func(_ context.Context, addr string, tlsCfg *tls.Config, cfg *quic.Config) (*quic.Conn, error) {
+	rt := &http3.RoundTripper{
+		Dial: func(_ context.Context, addr string, tlsCfg *tls.Config, cfg *quic.Config) (quic.EarlyConnection, error) {
 			return conn, nil
 		},
 	}
