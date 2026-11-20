@@ -847,7 +847,7 @@ class _ModeSwitch extends StatelessWidget {
                                           width: 1.2,
                                           height: 22,
                                           decoration: BoxDecoration(
-                                            color: p.muted.withValues(
+                                            color: p.muted.withOpacity(
                                               alpha: 0.45,
                                             ),
                                             borderRadius: BorderRadius.circular(
@@ -2777,7 +2777,7 @@ class _UpdateBanner extends StatelessWidget {
                                     value: progress,
                                     minHeight: 4,
                                     color: color,
-                                    backgroundColor: color.withValues(
+                                    backgroundColor: color.withOpacity(
                                       alpha: 0.2,
                                     ),
                                   ),
