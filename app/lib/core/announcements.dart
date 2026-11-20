@@ -229,7 +229,10 @@ class AnnouncementStore extends ChangeNotifier {
     _timer?.cancel();
     final at = now();
     final boundaries = [
-      for (final item in _items) ...[?item.startsAt, ?item.expiresAt],
+      for (final item in _items) ...[
+        if (item.startsAt != null) item.startsAt!,
+        if (item.expiresAt != null) item.expiresAt!,
+      ],
     ].where((t) => t.isAfter(at)).toList()..sort();
     if (boundaries.isNotEmpty) {
       _timer = Timer(boundaries.first.difference(at), () {

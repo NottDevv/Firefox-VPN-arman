@@ -106,7 +106,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   ),
                   const SizedBox(height: 28),
                   DropdownButtonFormField<String>(
-                    initialValue: _language,
+                    value: _language,
                     decoration: InputDecoration(
                       labelText: l.language,
                       prefixIcon: const Icon(Icons.translate_rounded),
@@ -127,7 +127,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     key: ValueKey(_region),
-                    initialValue: _region,
+                    value: _region,
                     decoration: InputDecoration(
                       labelText: l.region,
                       helperText: l.routingDirectHint,

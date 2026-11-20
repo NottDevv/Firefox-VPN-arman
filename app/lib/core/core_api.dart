@@ -370,7 +370,7 @@ class CoreApi {
   Future<void> downloadUpdate(String version, {Map<String, Object?>? source}) =>
       _json('POST', '/api/update/download', {
         'version': version,
-        'source': ?source,
+        if (source != null) 'source': source,
       });
 
   /// Installs the downloaded [version]: the core starts the installation,

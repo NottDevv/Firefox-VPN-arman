@@ -1024,7 +1024,6 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
           ],
         ),
-      ),
     );
   }
 
@@ -1653,7 +1652,6 @@ Future<T?> _pickOne<T>(
           ),
         ),
       ),
-    ),
     actions: [
       TextButton(
         onPressed: () => Navigator.pop(context),

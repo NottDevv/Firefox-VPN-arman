@@ -423,7 +423,6 @@ class CountryFlag extends StatelessWidget {
               width: width,
               height: height,
               fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => fallback,
             )
           // Not carried: from the core, the code until it arrives.
           : FutureBuilder(
@@ -434,8 +433,7 @@ class CountryFlag extends StatelessWidget {
                   width: width,
                   height: height,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => fallback,
-                ),
+                                  ),
                 null => fallback,
               },
             ),
@@ -564,7 +562,7 @@ class Panel extends StatelessWidget {
                       ),
                     ),
                   ),
-                  ?trailing,
+                  if (trailing != null) trailing,
                 ],
               ),
               const SizedBox(height: 14),

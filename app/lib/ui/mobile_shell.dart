@@ -135,7 +135,7 @@ class _MobileShellState extends State<MobileShell> {
               ));
     return PopScope(
       canPop: _tab == 0,
-      onPopInvokedWithResult: (didPop, _) {
+      onPopInvoked: (didPop) {
         if (!didPop) setState(() => _tab = 0);
       },
       child: Scaffold(
@@ -148,7 +148,7 @@ class _MobileShellState extends State<MobileShell> {
                 _push(l.checkUpdates, () => AboutPage(core: core)),
             child: Column(
               children: [
-                ?widget.banner,
+                if (widget.banner != null) widget.banner!,
                 Expanded(child: page),
               ],
             ),
@@ -285,65 +285,69 @@ class _SettingsListState extends State<_SettingsList> {
                   settingOnThisPlatform(l, entry.$2))
                 entry,
           ];
-    final groups = [
-      ?group(l.sectionGeneral, [
-        // Language and theme first, what someone looks for before anything
-        // else, with which country and account; then how the traffic goes,
-        // what helps when Mozilla is blocked, and the app itself.
+    final generalGroup = group(l.sectionGeneral, [
+      // Language and theme first, what someone looks for before anything
+      // else, with which country and account; then how the traffic goes,
+      // what helps when Mozilla is blocked, and the app itself.
+      section(
+        SettingsSection.general,
+        Icons.tune_rounded,
+        l.sectionGeneral,
+      ),
+      row(Icons.public_rounded, l.navServers, onOpenServers),
+      row(Icons.people_outline_rounded, l.navAccounts, onOpenAccounts),
+    ]);
+    final networkGroup = group(l.groupNetwork, [
+      section(
+        SettingsSection.connection,
+        Icons.vpn_lock_outlined,
+        l.sectionConnection,
+      ),
+      section(
+        SettingsSection.routing,
+        Icons.alt_route_rounded,
+        l.sectionRouting,
+      ),
+      section(SettingsSection.dns, Icons.dns_rounded, l.sectionDns),
+    ]);
+    final bypassGroup = group(l.sectionBypass, [
+      section(SettingsSection.relay, Icons.cloud_outlined, l.apiRelay),
+      section(
+        SettingsSection.fragment,
+        Icons.content_cut_rounded,
+        l.tlsFragment,
+      ),
+      section(
+        SettingsSection.upstreamProxy,
+        Icons.lan_outlined,
+        l.upstreamProxy,
+      ),
+    ]);
+    final appGroup = group(l.groupApp, [
+      // The app's port and the web dashboard: computers only (a narrow
+      // window shows this layout too).
+      if (!Platform.isAndroid)
         section(
-          SettingsSection.general,
-          Icons.tune_rounded,
-          l.sectionGeneral,
+          SettingsSection.advanced,
+          Icons.build_outlined,
+          l.sectionAdvanced,
         ),
-        row(Icons.public_rounded, l.navServers, onOpenServers),
-        row(Icons.people_outline_rounded, l.navAccounts, onOpenAccounts),
-      ]),
-      ?group(l.groupNetwork, [
-          section(
-            SettingsSection.connection,
-            Icons.vpn_lock_outlined,
-            l.sectionConnection,
-          ),
-          section(
-            SettingsSection.routing,
-            Icons.alt_route_rounded,
-            l.sectionRouting,
-          ),
-          section(SettingsSection.dns, Icons.dns_rounded, l.sectionDns),
-        ]),
-      ?group(l.sectionBypass, [
-          section(SettingsSection.relay, Icons.cloud_outlined, l.apiRelay),
-          section(
-            SettingsSection.fragment,
-            Icons.content_cut_rounded,
-            l.tlsFragment,
-          ),
-          section(
-            SettingsSection.upstreamProxy,
-            Icons.lan_outlined,
-            l.upstreamProxy,
-          ),
-        ]),
-      ?group(l.groupApp, [
-          // The app's port and the web dashboard: computers only (a narrow
-          // window shows this layout too).
-          if (!Platform.isAndroid)
-            section(
-              SettingsSection.advanced,
-              Icons.build_outlined,
-              l.sectionAdvanced,
-            ),
-          row(
-            Icons.receipt_long_outlined,
-            l.navLogs,
-            () => push(l.navLogs, () => LogsPage(core: core)),
-          ),
-          row(
-            Icons.info_outline_rounded,
-            l.navAbout,
-            () => push(l.navAbout, () => AboutPage(core: core)),
-          ),
-        ]),
+      row(
+        Icons.receipt_long_outlined,
+        l.navLogs,
+        () => push(l.navLogs, () => LogsPage(core: core)),
+      ),
+      row(
+        Icons.info_outline_rounded,
+        l.navAbout,
+        () => push(l.navAbout, () => AboutPage(core: core)),
+      ),
+    ]);
+    final groups = [
+      if (generalGroup != null) generalGroup,
+      if (networkGroup != null) networkGroup,
+      if (bypassGroup != null) bypassGroup,
+      if (appGroup != null) appGroup,
     ];
     return ListView(
       padding: pagePadding(context),
