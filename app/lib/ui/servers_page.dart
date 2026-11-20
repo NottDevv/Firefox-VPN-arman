@@ -348,7 +348,7 @@ class _ChoiceRow extends StatelessWidget {
     final scheme = theme.colorScheme;
     return Material(
       color: selected
-          ? scheme.primary.withValues(alpha: 0.08)
+          ? scheme.primary.withOpacity( 0.08)
           : Colors.transparent,
       child: InkWell(
         onTap: onTap,
@@ -436,7 +436,7 @@ class _Delay extends StatelessWidget {
     final chip = Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: color.withOpacity( 0.12),
         borderRadius: BorderRadius.circular(999),
       ),
       child: testing

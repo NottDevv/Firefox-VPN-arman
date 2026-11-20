@@ -1834,7 +1834,7 @@ class _Row extends StatelessWidget {
                 border: BorderDirectional(
                   start: BorderSide(
                     width: 2,
-                    color: theme.colorScheme.primary.withValues(alpha: 0.35),
+                    color: theme.colorScheme.primary.withOpacity( 0.35),
                   ),
                 ),
               )
@@ -2473,7 +2473,7 @@ class _UpstreamProxyState extends State<_UpstreamProxy> {
     // off under what looks like a filled-in address.
     final example = TextStyle(
       color: Theme.of(context).colorScheme.onSurfaceVariant
-          .withValues(alpha: 0.45),
+          .withOpacity( 0.45),
     );
     // An address reads left to right in a right-to-left language too: the host,
     // then the port, as in 127.0.0.1:1080. Tab goes in that order.
@@ -2752,7 +2752,7 @@ class _RuleChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
+          color: theme.colorScheme.surfaceVariant,
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(
@@ -2794,7 +2794,7 @@ class _RuleSyntax extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLow,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
@@ -3052,9 +3052,9 @@ class _DnsSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
+        color: color.withOpacity( 0.10),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.35)),
+        border: Border.all(color: color.withOpacity( 0.35)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -213,9 +213,9 @@ class _ProblemBox extends StatelessWidget {
           child: Container(
             padding: const EdgeInsetsDirectional.fromSTEB(12, 9, 14, 9),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: dark ? 0.18 : 0.11),
+              color: color.withOpacity( dark ? 0.18 : 0.11),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: color.withValues(alpha: 0.4)),
+              border: Border.all(color: color.withOpacity( 0.4)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -813,10 +813,10 @@ class _ModeSwitch extends StatelessWidget {
                           heightFactor: 1,
                           child: DecoratedBox(
                             decoration: ShapeDecoration(
-                              color: accent.withValues(alpha: 0.2),
+                              color: accent.withOpacity( 0.2),
                               shape: StadiumBorder(
                                 side: BorderSide(
-                                  color: accent.withValues(alpha: 0.35),
+                                  color: accent.withOpacity( 0.35),
                                 ),
                               ),
                             ),
@@ -1750,8 +1750,8 @@ class _Glow extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [
-            color.withValues(alpha: alpha),
-            color.withValues(alpha: 0),
+            color.withOpacity( alpha),
+            color.withOpacity( 0),
           ],
         ),
       ),
@@ -1785,7 +1785,7 @@ class _HomeCard extends StatelessWidget {
           ? null
           : [
               BoxShadow(
-                color: const Color(0xFF2A3375).withValues(alpha: 0.08),
+                color: const Color(0xFF2A3375).withOpacity( 0.08),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
@@ -1939,8 +1939,8 @@ class _PowerOrb extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    accent.withValues(alpha: on ? 0.30 : 0.10),
-                    accent.withValues(alpha: 0),
+                    accent.withOpacity( on ? 0.30 : 0.10),
+                    accent.withOpacity( 0),
                   ],
                 ),
               ),
@@ -1951,7 +1951,7 @@ class _PowerOrb extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: accent.withValues(alpha: on ? 0.55 : 0.28),
+                  color: accent.withOpacity( on ? 0.55 : 0.28),
                   width: 1.5,
                 ),
               ),
@@ -1975,16 +1975,16 @@ class _PowerOrb extends StatelessWidget {
                 ),
                 border: Border.all(
                   color: on
-                      ? Colors.white.withValues(alpha: 0.4)
+                      ? Colors.white.withOpacity( 0.4)
                       : p.discOffEdge,
                   width: 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: on
-                        ? accent.withValues(alpha: 0.5)
+                        ? accent.withOpacity( 0.5)
                         : (p.dark ? Colors.black : const Color(0xFF2A3375))
-                              .withValues(alpha: p.dark ? 0.45 : 0.14),
+                              .withOpacity( p.dark ? 0.45 : 0.14),
                     blurRadius: on ? 36 : 26,
                     offset: const Offset(0, 10),
                   ),
@@ -2108,7 +2108,7 @@ class _ConnectingArc extends CustomPainter {
       ..shader = SweepGradient(
         startAngle: 0,
         endAngle: sweep,
-        colors: [color.withValues(alpha: 0), color.withValues(alpha: 0.95)],
+        colors: [color.withOpacity( 0), color.withOpacity( 0.95)],
         transform: GradientRotation(start),
       ).createShader(circle);
     canvas.drawArc(circle, start, sweep, false, paint);
@@ -2230,7 +2230,7 @@ class _Contours extends CustomPainter {
             : path.lineTo(point.dx, point.dy);
       }
       path.close();
-      paint.color = color.withValues(alpha: alpha * (1 - i / lines));
+      paint.color = color.withOpacity( alpha * (1 - i / lines));
       canvas.drawPath(path, paint);
     }
   }
@@ -2275,7 +2275,7 @@ class _HomeData extends StatelessWidget {
               painter: _QuotaRing(
                 value: 1,
                 color: theme.colorScheme.primary,
-                track: p.text.withValues(alpha: 0.08),
+                track: p.text.withOpacity( 0.08),
               ),
               child: Center(
                 child: Icon(
@@ -2338,7 +2338,7 @@ class _HomeData extends StatelessWidget {
               painter: _QuotaRing(
                 value: fraction,
                 color: color,
-                track: p.text.withValues(alpha: 0.08),
+                track: p.text.withOpacity( 0.08),
               ),
               child: Center(
                 child: Text(
@@ -2512,10 +2512,10 @@ class _NoticesState extends State<_Notices> {
             child: Container(
               padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 6, 10),
               decoration: BoxDecoration(
-                color: StatusColors.busy.withValues(alpha: 0.12),
+                color: StatusColors.busy.withOpacity( 0.12),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: StatusColors.busy.withValues(alpha: 0.4),
+                  color: StatusColors.busy.withOpacity( 0.4),
                 ),
               ),
               child: Row(
@@ -2727,10 +2727,10 @@ class _UpdateBanner extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
-        color: color.withValues(alpha: p.dark ? 0.16 : 0.12),
+        color: color.withOpacity( p.dark ? 0.16 : 0.12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: color.withValues(alpha: 0.4)),
+          side: BorderSide(color: color.withOpacity( 0.4)),
         ),
         child: Padding(
           padding: EdgeInsetsDirectional.fromSTEB(
@@ -2940,10 +2940,10 @@ class _UdpNoticeState extends State<_UdpNotice> {
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: Material(
-          color: StatusColors.busy.withValues(alpha: p.dark ? 0.16 : 0.12),
+          color: StatusColors.busy.withOpacity( p.dark ? 0.16 : 0.12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
-            side: BorderSide(color: StatusColors.busy.withValues(alpha: 0.4)),
+            side: BorderSide(color: StatusColors.busy.withOpacity( 0.4)),
           ),
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(14, 8, 6, 8),
@@ -3085,10 +3085,10 @@ class _LowQuotaNoticeState extends State<_LowQuotaNotice> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
-        color: StatusColors.busy.withValues(alpha: p.dark ? 0.16 : 0.12),
+        color: StatusColors.busy.withOpacity( p.dark ? 0.16 : 0.12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: StatusColors.busy.withValues(alpha: 0.4)),
+          side: BorderSide(color: StatusColors.busy.withOpacity( 0.4)),
         ),
         child: Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 6, 6),
