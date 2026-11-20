@@ -70,13 +70,36 @@ jobs:
       - name: Build Windows x64 legacy runner
         working-directory: app
         run: flutter build windows --release --no-pub --dart-define=ARMAN_WINDOWS_LEGACY=true
-      - name: Set up Go 1.20.14
-        uses: actions/setup-go@v5
+      # Match Throne's Windows legacy toolchain: MetaCubeX Go 1.26, not stock Go 1.20.
+      - name: Cache MetaCubeX Go 1.26
+        id: cache-metacubex-go
+        uses: actions/cache@v4
         with:
-          go-version: '1.20.14'
-          cache: true
-          cache-dependency-path: core/go.sum
-      - name: Resolve Go modules with Go 1.20
+          path: .toolchains\metacubex-go
+          key: metacubex-go-1.26-windows-amd64
+      - name: Install MetaCubeX Go 1.26
+        if: steps.cache-metacubex-go.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP "go1.26.windows-amd64.zip"
+          $extract = Join-Path $env:RUNNER_TEMP "metacubex-go-extract"
+          Invoke-WebRequest -Uri "https://github.com/MetaCubeX/go/releases/download/build/go1.26.windows-amd64.zip" -OutFile $archive
+          Expand-Archive -Path $archive -DestinationPath $extract -Force
+          New-Item -ItemType Directory -Force -Path ".toolchains" | Out-Null
+          if (-not (Test-Path "$extract/go/bin/go.exe")) { throw "MetaCubeX Go archive did not contain go/bin/go.exe" }
+          Move-Item -Path "$extract/go" -Destination ".toolchains/metacubex-go"
+      - name: Activate patched Go toolchain
+        shell: pwsh
+        run: |
+          $goBin = Join-Path $env:GITHUB_WORKSPACE ".toolchains\metacubex-go\bin"
+          if (-not (Test-Path (Join-Path $goBin "go.exe"))) { throw "Patched Go executable is missing" }
+          Add-Content -Path $env:GITHUB_PATH -Value $goBin
+          Add-Content -Path $env:GITHUB_ENV -Value "GOTOOLCHAIN=local"
+          $env:PATH = "$goBin;$env:PATH"
+          $version = & (Join-Path $goBin "go.exe") version
+          Write-Host $version
+          if ($version -notmatch "go1\.26\.") { throw "Expected MetaCubeX Go 1.26, got: $version" }
+      - name: Resolve Go modules with MetaCubeX Go 1.26
         working-directory: core
         run: go mod tidy
       - name: Commit resolved Go module files
