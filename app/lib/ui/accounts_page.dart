@@ -140,15 +140,14 @@ class _SignInMethodRow extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(vertical: 12),
         content: SizedBox(
           width: 360,
-          child: RadioGroup<SignInMethod>(
-            groupValue: settings.signInMethod,
-            onChanged: (v) => Navigator.pop(context, v),
-            child: Column(
+          child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 for (final method in SignInMethod.values)
                   RadioListTile<SignInMethod>(
                     value: method,
+                    groupValue: settings.signInMethod,
+                    onChanged: (v) => Navigator.pop(context, v),
                     title: Text(_label(l, method)),
                   ),
               ],

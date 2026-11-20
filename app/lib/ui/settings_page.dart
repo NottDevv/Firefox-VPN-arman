@@ -998,15 +998,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Panel(
       title: l.tlsFragment,
       icon: Icons.content_cut_rounded,
-      child: RadioGroup<String>(
-        groupValue: mode.isEmpty ? 'auto' : mode,
-        onChanged: (v) {
-          if (v == null || _saving) return;
-          _save({
-            ['network', 'hello_split']: v,
-          });
-        },
-        child: Column(
+      child: Column(
           children: [
             for (final (value, label, hint) in [
               ('off', l.tlsFragmentOff, l.tlsFragmentOffHint),
@@ -1021,6 +1013,11 @@ class _SettingsPageState extends State<SettingsPage> {
             ])
               RadioListTile<String>(
                 value: value,
+                groupValue: mode.isEmpty ? 'auto' : mode,
+                onChanged: (v) {
+                  if (v == null || _saving) return;
+                  _save({['network', 'hello_split']: v});
+                },
                 title: Text(label),
                 subtitle: Text(hint),
                 contentPadding: EdgeInsets.zero,
@@ -1641,15 +1638,14 @@ Future<T?> _pickOne<T>(
     content: SizedBox(
       width: 360,
       child: SingleChildScrollView(
-        child: RadioGroup<T>(
-          groupValue: value,
-          onChanged: (v) => Navigator.pop(context, v),
-          child: Column(
+        child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               for (final (i, (v, label, style)) in options.indexed)
                 RadioListTile<T>(
                   value: v,
+                  groupValue: value,
+                  onChanged: (v) => Navigator.pop(context, v),
                   title: Text(label, style: style),
                   subtitle: hints == null ? null : Text(hints[i]),
                 ),
