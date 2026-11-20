@@ -7,7 +7,6 @@ import (
 	"net"
 	"path"
 	"runtime"
-	"slices"
 	"strings"
 	"time"
 
@@ -154,7 +153,13 @@ func (d *Daemon) serveTun(ln net.Listener) {
 			if errors.Is(err, net.ErrClosed) {
 				return
 			}
-			backoff = min(max(2*backoff, 5*time.Millisecond), time.Second)
+			backoff *= 2
+			if backoff < 5*time.Millisecond {
+				backoff = 5 * time.Millisecond
+			}
+			if backoff > time.Second {
+				backoff = time.Second
+			}
 			time.Sleep(backoff)
 			continue
 		}
@@ -197,7 +202,8 @@ func (d *Daemon) TunMTU() int { return d.config().Tun.MTU }
 
 // TunPrograms is tun.programs, which the TUN sends directly.
 func (d *Daemon) TunPrograms() []config.TunProgram {
-	return slices.Clone(d.config().Tun.Programs)
+	programs := d.config().Tun.Programs
+	return append([]config.TunProgram(nil), programs...)
 }
 
 // NoteRefusedUDP records the program (its file name, and its executable)

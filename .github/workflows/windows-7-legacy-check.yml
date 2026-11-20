@@ -5,6 +5,7 @@ on:
     branches: [windows-7-legacy-x64]
     paths:
       - 'app/**'
+      - 'core/**'
       - '.github/workflows/windows-7-legacy-check.yml'
   workflow_dispatch:
 
@@ -13,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   flutter-legacy:
@@ -26,6 +27,13 @@ jobs:
           flutter-version: '3.16.9'
           channel: stable
           cache: true
+      - name: Cache Dart pub packages
+        uses: actions/cache@v4
+        with:
+          path: C:\Users\runneradmin\AppData\Local\Pub\Cache
+          key: ${{ runner.os }}-dart-pub-${{ hashFiles('app/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-dart-pub-
       - name: Resolve dependencies
         working-directory: app
         run: flutter pub get
@@ -34,6 +42,17 @@ jobs:
         with:
           name: windows-7-legacy-pubspec-lock
           path: app/pubspec.lock
+      - name: Commit resolved Flutter lockfile
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/pubspec.lock
+          $changed = git diff --cached --name-only
+          if ($changed) {
+            git commit -m "Update Flutter lockfile for Windows 7 legacy"
+            git push origin "HEAD:$env:GITHUB_REF_NAME"
+          }
           if-no-files-found: error
           retention-days: 7
       - name: Analyze
@@ -48,3 +67,41 @@ jobs:
       - name: Build Windows x64 legacy runner
         working-directory: app
         run: flutter build windows --release --no-pub --dart-define=ARMAN_WINDOWS_LEGACY=true
+      - name: Set up Go 1.20.14
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.20.14'
+          cache: true
+          cache-dependency-path: core/go.sum
+      - name: Resolve Go modules with Go 1.20
+        working-directory: core
+        run: go mod tidy
+      - name: Commit resolved Go module files
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add core/go.mod core/go.sum
+          $changed = git diff --cached --name-only
+          if ($changed) {
+            git commit -m "Pin Go dependencies for Windows 7 legacy"
+            git push origin "HEAD:$env:GITHUB_REF_NAME"
+          }
+      - name: Build Windows x64 core
+        working-directory: core
+        run: go build -trimpath -ldflags="-s -w" -o ../app/build/windows/x64/runner/Release/arman-vpn-core.exe ./cmd/arman-vpn-core
+      - name: Build Windows x64 TUN service
+        working-directory: core
+        run: go build -tags=with_gvisor -trimpath -ldflags="-s -w" -o ../app/build/windows/x64/runner/Release/arman-vpn-tun.exe ./cmd/arman-vpn-tun
+      - name: Package Windows 7 legacy x64 ZIP
+        shell: pwsh
+        run: |
+          $releaseDir = "app/build/windows/x64/runner/Release"
+          if (-not (Test-Path "$releaseDir/arman-vpn-core.exe")) { throw "Core executable was not built" }
+          if (-not (Test-Path "$releaseDir/arman-vpn-tun.exe")) { throw "TUN service executable was not built" }
+          Compress-Archive -Path "$releaseDir/*" -DestinationPath "app/build/Firefox-VPN-arman-Windows-Legacy-x64.zip" -Force
+      - name: Upload Windows 7 legacy x64 ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: Firefox-VPN-arman-Windows-Legacy-x64
+          path: app/build/Firefox-VPN-arman-Windows-Legacy-x64.zip

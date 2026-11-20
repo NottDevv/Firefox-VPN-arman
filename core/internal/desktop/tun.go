@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"slices"
 	"time"
 
 	"github.com/armanlife/arman-vpn-client/core/internal/config"
@@ -184,7 +183,16 @@ func (t *tunSync) syncPrograms() {
 		return
 	}
 	programs := tunPrograms(t.host.TunPrograms())
-	if slices.Equal(programs, t.programs) {
+	samePrograms := len(programs) == len(t.programs)
+	if samePrograms {
+		for i := range programs {
+			if programs[i] != t.programs[i] {
+				samePrograms = false
+				break
+			}
+		}
+	}
+	if samePrograms {
 		return
 	}
 	// A failed send ends the connection, and the events say so.
@@ -478,5 +486,16 @@ var tunRetryDelay = func(code string, failures int) time.Duration {
 	case service.TunCodeBusy, service.TunCodeNotRunning:
 		return 5 * time.Second
 	}
-	return min(5*time.Second<<min(failures-1, 4), time.Minute)
+	shift := failures - 1
+	if shift < 0 {
+		shift = 0
+	}
+	if shift > 4 {
+		shift = 4
+	}
+	delay := 5 * time.Second << shift
+	if delay > time.Minute {
+		delay = time.Minute
+	}
+	return delay
 }

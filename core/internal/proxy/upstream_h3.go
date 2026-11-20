@@ -70,14 +70,10 @@ func newH3ProxySession(proxyURL *url.URL, token string, timeout time.Duration) (
 	}
 	quicCfg := &quic.Config{
 		KeepAlivePeriod: 30 * time.Second,
-		// Default InitialPacketSize (1280) is the QUIC payload size;
-		// once IP/UDP headers are added it exceeds low-MTU links so every initial packet gets dropped and the handshake times out with no QUIC traffic visible on the wire.
-		// Start below the RFC 8899 floor so the handshake succeeds on any path; PMTU discovery grows it back up.
-		InitialPacketSize: 1200,
 	}
 
 	// dialAll tries ips in turn, sharing budget (0: ctx alone limits it).
-	dialAll := func(ips []netip.Addr, budget time.Duration) (*quic.Conn, *net.UDPConn, error) {
+	dialAll := func(ips []netip.Addr, budget time.Duration) (quic.EarlyConnection, *net.UDPConn, error) {
 		var perAttempt time.Duration
 		if budget > 0 {
 			perAttempt = budget / time.Duration(len(ips))
@@ -100,9 +96,22 @@ func newH3ProxySession(proxyURL *url.URL, token string, timeout time.Duration) (
 			if perAttempt > 0 {
 				attemptCtx, attemptCancel = context.WithTimeout(ctx, perAttempt)
 			}
-			c, err := quic.Dial(attemptCtx, uc, udpAddr, tlsCfg, quicCfg)
+			c, err := quic.DialEarly(attemptCtx, uc, udpAddr, tlsCfg, quicCfg)
+			if err == nil {
+				select {
+				case <-c.HandshakeComplete():
+					if !c.ConnectionState().TLS.HandshakeComplete {
+						err = errors.New("QUIC handshake did not complete")
+					}
+				case <-attemptCtx.Done():
+					err = attemptCtx.Err()
+				}
+			}
 			attemptCancel()
 			if err != nil {
+				if c != nil {
+					_ = c.CloseWithError(0, "")
+				}
 				_ = uc.Close()
 				lastErr = fmt.Errorf("dial %s: %w", udpAddr, err)
 				continue
@@ -116,7 +125,7 @@ func newH3ProxySession(proxyURL *url.URL, token string, timeout time.Duration) (
 	// turn, a step that another follows taking half the time left.
 	steps := upstreamSteps()
 	var (
-		conn    *quic.Conn
+		conn    quic.EarlyConnection
 		udpConn *net.UDPConn
 		failed  stepError
 	)
