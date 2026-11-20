@@ -152,7 +152,7 @@ class _BypassAppsPageState extends State<BypassAppsPage> {
           a,
     ];
     return PopScope(
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         // Applied once: the VPN is set up again with the new choice.
         if (didPop && routing != null && routing.key != _initial) {
           AndroidCore.setAppRouting(routing, apply: true);
