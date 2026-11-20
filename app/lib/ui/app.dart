@@ -301,7 +301,7 @@ class _ShellState extends State<Shell> {
           child: Row(
             children: [
               SizedBox(
-                width: 230,
+                width: 300,
                 child: Column(
                   children: [
                     Expanded(
@@ -318,7 +318,7 @@ class _ShellState extends State<Shell> {
                                 onDestinationSelected: select,
                                 // Icons with their names beside them.
                                 extended: true,
-                                minExtendedWidth: 230,
+                                minExtendedWidth: 300,
                                 leading: Padding(
                                   padding: const EdgeInsets.fromLTRB(
                                     16,

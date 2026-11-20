@@ -3037,8 +3037,10 @@ void main() {
       List<String> args = const [],
       Release? found,
       String known = '',
+      Future<void> Function()? onQuit,
     }) async {
       Updates.reset();
+      Updates.quitApp = onQuit;
       stillMotion(tester);
       tester.view.physicalSize = const Size(1200, 900);
       tester.view.devicePixelRatio = 1;
@@ -3303,8 +3305,8 @@ void main() {
         tester,
         update: {'state': 'ready', 'version': '9.9.9'},
         args: ['--autostart', '--data-dir=elsewhere'],
+        onQuit: () async => quit++,
       );
-      Updates.quitApp = () async => quit++;
       // With the app's own arguments (its data folder too, so the new
       // version opens the same one), and before it connects.
       expect(api.installs.single.$1, '9.9.9');
