@@ -164,14 +164,16 @@ jobs:
         shell: pwsh
         run: |
           $releaseDir = "app/build/windows/x64/runner/Release"
-          Copy-Item "legacy-core/arman-vpn-core.exe" $releaseDir -Force
-          Copy-Item "legacy-core/arman-vpn-tun.exe" $releaseDir -Force
+          $coreDir = Join-Path $releaseDir "core"
+          New-Item -ItemType Directory -Path $coreDir -Force | Out-Null
+          Copy-Item "legacy-core/arman-vpn-core.exe" $coreDir -Force
+          Copy-Item "legacy-core/arman-vpn-tun.exe" $coreDir -Force
       - name: Package Windows 7 legacy x64 ZIP
         shell: pwsh
         run: |
           $releaseDir = "app/build/windows/x64/runner/Release"
-          if (-not (Test-Path "$releaseDir/arman-vpn-core.exe")) { throw "Core executable was not built" }
-          if (-not (Test-Path "$releaseDir/arman-vpn-tun.exe")) { throw "TUN service executable was not built" }
+          if (-not (Test-Path "$releaseDir/core/arman-vpn-core.exe")) { throw "Core executable was not installed in the core folder" }
+          if (-not (Test-Path "$releaseDir/core/arman-vpn-tun.exe")) { throw "TUN service executable was not installed in the core folder" }
           Compress-Archive -Path "$releaseDir/*" -DestinationPath "app/build/Firefox-VPN-arman-Windows-Legacy-x64.zip" -Force
       - name: Upload Windows 7 legacy x64 ZIP
         uses: actions/upload-artifact@v4
