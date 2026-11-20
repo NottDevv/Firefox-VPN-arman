@@ -135,7 +135,7 @@ class _MobileShellState extends State<MobileShell> {
               ));
     return PopScope(
       canPop: _tab == 0,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop) setState(() => _tab = 0);
       },
       child: Scaffold(
