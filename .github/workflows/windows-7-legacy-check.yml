@@ -24,9 +24,29 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.9'
+          flutter-version: '3.24.5'
           channel: stable
           cache: true
+      # RustDesk's custom 3.24-era Windows x64 engine restores Win7 APIs in Dart/Engine.
+      # Keep this engine paired with Flutter 3.24.5; the stock engine is not Win7-compatible.
+      - name: Install RustDesk Windows 7 compatible Flutter engine
+        shell: pwsh
+        run: |
+          flutter --version
+          flutter precache --windows
+          $flutterCommand = (Get-Command flutter).Source
+          $flutterRoot = Split-Path (Split-Path $flutterCommand -Parent) -Parent
+          $engineDir = Join-Path $flutterRoot "bin\cache\artifacts\engine\windows-x64-release"
+          if (-not (Test-Path $engineDir)) { throw "Flutter Windows x64 release engine directory not found: $engineDir" }
+          $archive = Join-Path $env:RUNNER_TEMP "rustdesk-windows-x64-release.zip"
+          $extract = Join-Path $env:RUNNER_TEMP "rustdesk-windows-x64-release"
+          Invoke-WebRequest -Uri "https://github.com/rustdesk/engine/releases/download/main/windows-x64-release.zip" -OutFile $archive
+          Expand-Archive -Path $archive -DestinationPath $extract -Force
+          if (-not (Test-Path (Join-Path $extract "flutter_windows.dll"))) { throw "RustDesk engine archive is missing flutter_windows.dll" }
+          Copy-Item -Path (Join-Path $extract "*") -Destination $engineDir -Recurse -Force
+          if (-not (Test-Path (Join-Path $engineDir "flutter_windows.dll"))) { throw "RustDesk Flutter engine installation failed" }
+          Write-Host "Installed RustDesk patched Flutter engine into $engineDir"
+          flutter doctor -v
       - name: Cache Dart pub packages
         uses: actions/cache@v4
         with:
