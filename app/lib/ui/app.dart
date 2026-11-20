@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui' show FontFeature;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -454,7 +453,7 @@ class _TrafficCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity( 0.5),
+        color: theme.colorScheme.surfaceContainerHighest.withOpacity( 0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
