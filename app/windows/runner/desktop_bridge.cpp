@@ -60,6 +60,42 @@ bool IsWebUrl(const std::string& url) {
   return starts_with("http://") || starts_with("https://");
 }
 
+// These DPI APIs were added in Windows 10 version 1607. Do not link to them
+// directly: the Windows loader would reject the executable on Windows 7 before
+// WinMain is reached. Resolve them at runtime and retain the classic Win32
+// behavior when they are unavailable.
+using GetDpiForWindowProc = UINT(WINAPI*)(HWND);
+using AdjustWindowRectExForDpiProc =
+    BOOL(WINAPI*)(LPRECT, DWORD, BOOL, DWORD, UINT);
+
+UINT GetWindowDpiCompat(HWND window) {
+  static const auto get_dpi_for_window =
+      reinterpret_cast<GetDpiForWindowProc>(::GetProcAddress(
+          ::GetModuleHandleW(L"user32.dll"), "GetDpiForWindow"));
+  if (get_dpi_for_window) {
+    return get_dpi_for_window(window);
+  }
+
+  HDC dc = ::GetDC(window);
+  if (!dc) {
+    return 96;
+  }
+  const int dpi = ::GetDeviceCaps(dc, LOGPIXELSX);
+  ::ReleaseDC(window, dc);
+  return dpi > 0 ? static_cast<UINT>(dpi) : 96;
+}
+
+BOOL AdjustWindowRectExCompat(LPRECT rect, DWORD style, BOOL menu,
+                              DWORD ex_style, UINT dpi) {
+  static const auto adjust_window_rect_ex_for_dpi =
+      reinterpret_cast<AdjustWindowRectExForDpiProc>(::GetProcAddress(
+          ::GetModuleHandleW(L"user32.dll"), "AdjustWindowRectExForDpi"));
+  if (adjust_window_rect_ex_for_dpi) {
+    return adjust_window_rect_ex_for_dpi(rect, style, menu, ex_style, dpi);
+  }
+  return ::AdjustWindowRectEx(rect, style, menu, ex_style);
+}
+
 }  // namespace
 
 DesktopBridge::DesktopBridge(flutter::BinaryMessenger* messenger, HWND window,
@@ -412,11 +448,11 @@ std::optional<LRESULT> DesktopBridge::HandleMessage(UINT message,
     // 640 meant that layout could never be reached by resizing. The limit
     // is for the whole window, so the frame is added; rounded up, so the
     // inside never comes out a fraction short.
-    const UINT dpi = GetDpiForWindow(window_);
+    const UINT dpi = GetWindowDpiCompat(window_);
     const double scale = dpi / 96.0;
     RECT rect = {0, 0, static_cast<LONG>(std::ceil(400 * scale)),
                  static_cast<LONG>(std::ceil(480 * scale))};
-    AdjustWindowRectExForDpi(
+    AdjustWindowRectExCompat(
         &rect, static_cast<DWORD>(GetWindowLongPtr(window_, GWL_STYLE)), FALSE,
         static_cast<DWORD>(GetWindowLongPtr(window_, GWL_EXSTYLE)), dpi);
     auto* info = reinterpret_cast<MINMAXINFO*>(lparam);
