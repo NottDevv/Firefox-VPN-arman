@@ -7,7 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.6.1
 	github.com/quic-go/quic-go v0.40.1
 	github.com/refraction-networking/utls v1.7.0
-	github.com/sagernet/gvisor v0.0.0-20241123041152-536d05261cff
+	github.com/sagernet/gvisor v0.0.0-20260727.0-sing-box-mod.1
 	github.com/sagernet/netlink v0.0.0-20240612041022-b9a21c07ac6a
 	github.com/sagernet/sing v0.8.12-0.20260717023913-84ab32b56cb8
 	github.com/sagernet/sing-tun v0.9.6
