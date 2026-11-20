@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math/rand/v2"
+	"math/rand"
 	"net"
 	"net/url"
 	"os"
 	"path/filepath"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -159,7 +158,14 @@ func locationMatcher(proxies []Candidate, countryFilter string) (func(Candidate)
 	if countryFilter != "" {
 		return func(c Candidate) bool { return proxyCandidateMatchesCountry(c, countryFilter) }, nil
 	}
-	if slices.ContainsFunc(proxies, Candidate.IsRecommended) {
+	hasRecommended := false
+	for _, candidate := range proxies {
+		if candidate.IsRecommended() {
+			hasRecommended = true
+			break
+		}
+	}
+	if hasRecommended {
 		return Candidate.IsRecommended, nil
 	}
 	selectedCountryCode := ""
@@ -216,7 +222,7 @@ func pickInFirstCity(candidates []Candidate, match func(Candidate) bool) (pick C
 	if len(city) == 0 {
 		return Candidate{}, false
 	}
-	return city[rand.IntN(len(city))], true
+	return city[rand.Intn(len(city))], true
 }
 
 func proxyCandidateMatchesCountry(candidate Candidate, countryFilter string) bool {
