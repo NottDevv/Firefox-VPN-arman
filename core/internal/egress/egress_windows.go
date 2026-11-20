@@ -10,6 +10,18 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+// GetIpInterfaceEntry is exported by iphlpapi.dll on Windows Vista and later.
+// x/sys/windows exposes the row type but does not wrap this API.
+var getIpInterfaceEntryProc = windows.NewLazySystemDLL("iphlpapi.dll").NewProc("GetIpInterfaceEntry")
+
+func getIPInterfaceEntry(row *windows.MibIpInterfaceRow) error {
+	result, _, _ := getIpInterfaceEntryProc.Call(uintptr(unsafe.Pointer(row)))
+	if result != 0 {
+		return syscall.Errno(result)
+	}
+	return nil
+}
+
 // Socket options that pin a socket's outgoing interface (ws2ipdef.h).
 const (
 	ipUnicastIf   = 31
@@ -82,7 +94,7 @@ func defaultInterface(v6 bool, st *tunState) (uint32, bool) {
 			continue
 		}
 		ipRow := windows.MibIpInterfaceRow{Family: family, InterfaceLuid: row.InterfaceLuid}
-		if windows.GetIpInterfaceEntry(&ipRow) != nil || ipRow.Connected == 0 {
+		if getIPInterfaceEntry(&ipRow) != nil || ipRow.Connected == 0 {
 			continue
 		}
 		if metric := row.Metric + ipRow.Metric; metric < bestMetric {
