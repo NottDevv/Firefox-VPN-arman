@@ -153,7 +153,6 @@ class _SignInMethodRow extends StatelessWidget {
               ],
             ),
           ),
-        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:ui' show FontFeature;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../app_settings.dart';
 import '../core/android_core.dart';
@@ -329,8 +331,6 @@ class _ShellState extends State<Shell> {
                 // The traffic at the bottom of the menu; in a short window the
                 // pages above it scroll rather than run under it.
                 trailing: _TrafficPanel(traffic: status?.traffic),
-                trailingAtBottom: true,
-                scrollable: true,
               ),
               // A maximized window: the pages stay as wide as reads well; the
               // home page, centered by itself, keeps its colors to the edges.

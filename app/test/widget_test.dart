@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:arman_vpn/app_info.dart';
@@ -1884,7 +1884,9 @@ void main() {
     // Automatic by default.
     bool selected(String label) =>
         tester
-            .widget<RadioGroup<String>>(find.byType(RadioGroup<String>).last)
+            .widget<RadioListTile<String>>(
+              find.byType(RadioListTile<String>).first,
+            )
             .groupValue ==
         label;
     expect(selected('auto'), isTrue);

@@ -11,7 +11,7 @@ void main() {
       ProxyInfo.fromJson({
         'wake_error': error,
         'wake_error_code': code,
-        'wake_failed_at': ?at,
+        if (at != null) 'wake_failed_at': at,
       });
 
   ConnectionTest failedTest({
@@ -22,7 +22,7 @@ void main() {
     'ok': false,
     'error': error,
     'error_code': code,
-    'at': ?at,
+    if (at != null) 'at': at,
   });
 
   test('the reason is named, not the internet', () {
@@ -150,8 +150,8 @@ void main() {
     ]) => EngineState.fromJson({
       'phase': phase,
       'message': message,
-      'code': ?code,
-      'address': ?address,
+      if (code != null) 'code': code,
+      if (address != null) 'address': address,
     });
     CoreStatus status(Map<String, Object?> state) => CoreStatus.fromJson({
       'state': state,
