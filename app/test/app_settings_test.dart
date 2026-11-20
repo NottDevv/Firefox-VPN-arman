@@ -74,9 +74,8 @@ void main() {
 
   test('maps languages to routing regions', () {
     expect(AppSettings.regionForLanguage('fa'), 'ir');
-    expect(AppSettings.regionForLanguage('zh'), 'cn');
-    expect(AppSettings.regionForLanguage('ru'), 'ru');
     expect(AppSettings.regionForLanguage('en'), isNull);
+    expect(AppSettings.regionForLanguage('ru'), isNull);
     expect(AppSettings.suggestedRegion('en', 'TR'), 'tr');
     expect(AppSettings.suggestedRegion('en', 'US'), '');
     expect(AppSettings.suggestedRegion('fa', 'DE'), 'ir');

@@ -1094,19 +1094,8 @@ void main() {
   });
 
   for (final (language, connected) in [
-    ('zh', '已连接'),
-    ('ru', 'Подключено'),
-    ('es', 'Conectado'),
-    ('tr', 'Bağlı'),
-    ('pt', 'Conectado'),
-    ('zh_Hant', '已連線'),
-    ('vi', 'Đã kết nối'),
-    ('ar', 'متصل'),
-    ('bn', 'সংযুক্ত'),
-    ('fr', 'Connecté'),
-    ('hu', 'Csatlakozva'),
-    ('id', 'Terhubung'),
-    ('az', 'Qoşulub'),
+    ('en', 'Connected'),
+    ('fa', 'متصل'),
   ]) {
     testWidgets('speaks $language', (tester) async {
       stillMotion(tester);

@@ -457,26 +457,12 @@ String regionName(AppLocalizations l, String code) => switch (code) {
 const languageNames = {
   'en': 'English',
   'fa': 'فارسی',
-  'ar': 'العربية',
-  'zh': '简体中文',
-  'zh_Hant': '繁體中文',
-  'ru': 'Русский',
-  'es': 'Español',
-  'pt': 'Português (Brasil)',
-  'tr': 'Türkçe',
-  'fr': 'Français',
-  'hu': 'Magyar',
-  'id': 'Bahasa Indonesia',
-  'az': 'Azərbaycan dili',
-  'vi': 'Tiếng Việt',
-  'bn': 'বাংলা',
 };
 
-/// Bundled UI fonts for English and the Arabic script; other languages
-/// keep the platform typography and its script-specific fallbacks.
+/// Bundled UI fonts for English and Persian.
 String? languageFont(String code) => switch (code) {
   'en' => 'Inter',
-  'fa' || 'ar' => 'Vazirmatn',
+  'fa' => 'Vazirmatn',
   _ => null,
 };
 

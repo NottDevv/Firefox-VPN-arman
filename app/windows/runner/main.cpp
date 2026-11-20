@@ -79,7 +79,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   // --software-rendering asks for the same on any other card.
   if (OldGraphicsCard() ||
       HasArgument(command_line_arguments, "--software-rendering")) {
-    project.set_impeller_switch(flutter::ImpellerSwitch::Disabled);
     DrawWithoutGraphicsCard();
   }
 

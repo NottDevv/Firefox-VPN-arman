@@ -18,8 +18,7 @@ class AppSettings extends ChangeNotifier {
 
   final File? file;
 
-  /// A language code (`en`, `fa`, `zh`, `ru`), or empty for the system
-  /// language.
+  /// A language code (`en` or `fa`), or empty for the system language.
   String language = '';
   ThemeMode themeMode = ThemeMode.system;
   CloseAction closeAction = CloseAction.ask;
@@ -83,29 +82,11 @@ class AppSettings extends ChangeNotifier {
   /// protocol. Kept in this file.
   Set<String> hiddenConnectionColumns = {'inbound', 'traffic', 'duration'};
 
-  /// The app's languages, in the order the language menus list them.
-  /// 'zh' is Simplified and 'zh_Hant' Traditional Chinese.
-  static const supportedLanguages = [
-    'en',
-    'fa',
-    'zh',
-    'zh_Hant',
-    'ru',
-    'tr',
-    'ar',
-    // The rest by their own names.
-    'az',
-    'id',
-    'es',
-    'fr',
-    'hu',
-    'pt',
-    'vi',
-    'bn',
-  ];
+  /// The only UI languages, in the order the language menu lists them.
+  static const supportedLanguages = ['en', 'fa'];
 
   /// Languages written right to left.
-  static const rtlLanguages = {'fa', 'ar'};
+  static const rtlLanguages = {'fa'};
 
   /// The locale of a language code such as 'fa' or 'zh_Hant'.
   static Locale localeOf(String language) {
@@ -115,29 +96,18 @@ class AppSettings extends ChangeNotifier {
         : Locale(language);
   }
 
-  /// The app language for the system's [locale]: Traditional Chinese for
-  /// the Hant script or Taiwan, Hong Kong, and Macau; else the language
-  /// when the app has it; else English.
-  static String languageFor(Locale locale) {
-    if (locale.languageCode == 'zh') {
-      final traditional =
-          locale.scriptCode == 'Hant' ||
-          const {'TW', 'HK', 'MO'}.contains(locale.countryCode);
-      return traditional ? 'zh_Hant' : 'zh';
-    }
-    return supportedLanguages.contains(locale.languageCode)
-        ? locale.languageCode
-        : 'en';
-  }
+  /// Uses Persian when the system locale is Persian; all other system
+  /// languages fall back to English.
+  static String languageFor(Locale locale) =>
+      supportedLanguages.contains(locale.languageCode)
+          ? locale.languageCode
+          : 'en';
 
-  /// The app language for the system's preferred [locales], in order: the
-  /// first one the app has; else English (not Flutter's default, the first
-  /// language it was built with).
+  /// Uses the first supported system language; otherwise English.
   static String languageForList(List<Locale>? locales) {
     for (final locale in locales ?? const <Locale>[]) {
-      if (locale.languageCode == 'zh' ||
-          supportedLanguages.contains(locale.languageCode)) {
-        return languageFor(locale);
+      if (supportedLanguages.contains(locale.languageCode)) {
+        return locale.languageCode;
       }
     }
     return 'en';
@@ -160,17 +130,9 @@ class AppSettings extends ChangeNotifier {
 
   Locale? get locale => language.isEmpty ? null : localeOf(language);
 
-  /// The routing region most users of [language] want: Persian is Iran,
-  /// Chinese China, Russian Russia; null when a language says nothing.
-  static String? regionForLanguage(String language) => switch (language) {
-    'fa' => 'ir',
-    'zh' => 'cn',
-    'ru' => 'ru',
-    'id' => 'id',
-    'tr' => 'tr',
-    'pt' => 'br',
-    _ => null,
-  };
+  /// Persian suggests Iran; English has no language-based region.
+  static String? regionForLanguage(String language) =>
+      language == 'fa' ? 'ir' : null;
 
   /// The region to offer first: from [language], else from the system's
   /// country ([countryCode], such as IR), else none.

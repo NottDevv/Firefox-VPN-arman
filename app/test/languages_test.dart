@@ -10,14 +10,9 @@ import 'package:arman_vpn/ui/format.dart';
 void main() {
   test('the system locale picks the app language', () {
     expect(AppSettings.languageFor(const Locale('fa', 'IR')), 'fa');
-    expect(AppSettings.languageFor(const Locale('zh', 'CN')), 'zh');
-    expect(AppSettings.languageFor(const Locale('zh', 'TW')), 'zh_Hant');
-    expect(
-      AppSettings.languageFor(
-        const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
-      ),
-      'zh_Hant',
-    );
+    expect(AppSettings.languageFor(const Locale('en', 'US')), 'en');
+    expect(AppSettings.languageFor(const Locale('zh', 'CN')), 'en');
+    expect(AppSettings.languageFor(const Locale('ru')), 'en');
     expect(AppSettings.languageFor(const Locale('de')), 'en');
     // The first preferred language the app has; else English, also for a
     // system without one (Linux's C locale).
@@ -25,13 +20,13 @@ void main() {
       AppSettings.languageForList(const [Locale('de'), Locale('fa')]),
       'fa',
     );
+    expect(
+      AppSettings.languageForList(const [Locale('ru'), Locale('en')]),
+      'en',
+    );
     expect(AppSettings.languageForList(const [Locale('de')]), 'en');
     expect(AppSettings.languageForList(const [Locale('und')]), 'en');
     expect(AppSettings.languageForList(null), 'en');
-    expect(
-      AppSettings.localeOf('zh_Hant'),
-      const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
-    );
   });
 
   test('an account reason is in the language of the app', () async {
@@ -65,7 +60,7 @@ void main() {
     );
   });
 
-  testWidgets('every language formats dates', (tester) async {
+  testWidgets('both supported languages format dates', (tester) async {
     // Loads the date formats the app gets from Flutter Material.
     for (final language in AppSettings.supportedLanguages) {
       final locale = AppSettings.localeOf(language);

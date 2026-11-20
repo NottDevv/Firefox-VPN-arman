@@ -37,6 +37,9 @@ jobs:
       - name: Resolve dependencies
         working-directory: app
         run: flutter pub get
+      - name: Generate English and Persian localizations
+        working-directory: app
+        run: flutter gen-l10n
       - name: Preserve resolved lockfile
         uses: actions/upload-artifact@v4
         with:
