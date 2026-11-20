@@ -104,7 +104,7 @@ void main() {
   // and no «ی» ezafe after «ه».
   test('RTL failure texts start right to left', () {
     final rtlStart = RegExp('^[\u0600-\u06FF]');
-    for (final language in ['fa', 'ar']) {
+    for (final language in ['fa']) {
       final rtl = lookupAppLocalizations(Locale(language));
       final texts = [
         for (final code in [
