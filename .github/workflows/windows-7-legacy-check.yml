@@ -24,6 +24,13 @@ jobs:
       - name: Resolve dependencies
         working-directory: app
         run: flutter pub get
+      - name: Preserve resolved lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-7-legacy-pubspec-lock
+          path: app/pubspec.lock
+          if-no-files-found: error
+          retention-days: 7
       - name: Analyze
         working-directory: app
         run: flutter analyze
