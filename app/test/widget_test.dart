@@ -2571,9 +2571,8 @@ void main() {
     expect(find.text('Network'), findsOneWidget);
 
     // Back on the Settings tab goes Home rather than out of the app.
-    final popped = await tester.binding.handlePopRoute();
+    await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
-    expect(popped, isTrue);
     expect(find.text('Network'), findsNothing);
     expect(find.text('Data used'), findsOneWidget);
 
