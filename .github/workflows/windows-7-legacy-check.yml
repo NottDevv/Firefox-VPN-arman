@@ -12,14 +12,13 @@ concurrency:
   group: windows-7-legacy-${{ github.ref }}
   cancel-in-progress: true
 
-timeout-minutes: 45
-
 permissions:
   contents: read
 
 jobs:
   flutter-legacy:
     runs-on: windows-2022
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
