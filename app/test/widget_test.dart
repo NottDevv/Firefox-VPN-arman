@@ -2164,7 +2164,7 @@ void main() {
     await core.refresh();
     await core.runTest();
     await tester.pumpAndSettle();
-    expect(_buttonWithText<TextButton>('Connection settings'), findsOneWidget);
+    expect(_buttonWithText<TextButton>('Upstream proxy'), findsOneWidget);
     expect(mark, findsNothing);
 
     // It opens the setting.
@@ -3299,12 +3299,12 @@ void main() {
       tester,
     ) async {
       var quit = 0;
-      Updates.quitApp = () async => quit++;
       final (api, core, _) = await pumpUpdates(
         tester,
         update: {'state': 'ready', 'version': '9.9.9'},
         args: ['--autostart', '--data-dir=elsewhere'],
       );
+      Updates.quitApp = () async => quit++;
       // With the app's own arguments (its data folder too, so the new
       // version opens the same one), and before it connects.
       expect(api.installs.single.$1, '9.9.9');

@@ -351,7 +351,12 @@ class _ShellState extends State<Shell> {
                                     NavigationRailDestination(
                                       icon: icon,
                                       selectedIcon: selected,
-                                      label: Text(label),
+                                      label: Text(
+                                        label,
+                                        maxLines: 1,
+                                        softWrap: false,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                 ],
                               ),
